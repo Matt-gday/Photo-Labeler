@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Title App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+```
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        text-align: center;
+    }
+
+    .header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .header p {
+        opacity: 0.9;
+        font-size: 1.1rem;
+    }
+
+    .content {
+        padding: 30px;
+    }
+
+    .upload-section {
+        margin-bottom: 30px;
+    }
+
+    .upload-area {
+        border: 3px dashed #667eea;
+        border-radius: 15px;
+        padding: 40px 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: #f8f9ff;
+    }
+
+    .upload-area:hover {
+        border-color: #764ba2;
+        background: #f0f2ff;
+        transform: translateY(-2px);
+    }
+
+    .upload-area.dragover {
+        border-color: #764ba2;
+        background: #e8ebff;
+    }
+
+    .upload-icon {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        color: #667eea;
+    }
+
+    .upload-text {
+        font-size: 1.2rem;
+        color: #667eea;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .upload-subtext {
+        color: #888;
+        font-size: 0.9rem;
+    }
+
+    #fileInput {
+        display: none;
+    }
+
+    .title-section {
+        margin-bottom: 30px;
+    }
+
+    .title-section label {
+        display: block;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 10px;
+        font-size: 1.1rem;
+    }
+
+    #titleInput {
+        width: 100%;
+        padding: 15px;
+        border: 2px solid #e0e6ed;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        transition: border-color 0.3s ease;
+    }
+
+    #titleInput:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .preview-section {
+        margin-bottom: 30px;
+    }
+
+    #preview {
+        width: 100%;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        display: none;
+    }
+
+    .download-section {
+        text-align: center;
+    }
+
+    #downloadBtn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 15px 40px;
+        border-radius: 50px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: none;
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    #downloadBtn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    #downloadBtn:active {
+        transform: translateY(0);
+    }
+
+    .selected-file {
+        margin-top: 15px;
+        padding: 10px;
+        background: #e8f5e8;
+        border-radius: 8px;
+        color: #2d5a2d;
+        font-weight: 500;
+        display: none;
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            margin: 10px;
+            border-radius: 15px;
+        }
+        
+        .header {
+            padding: 20px;
+        }
+        
+        .header h1 {
+            font-size: 1.5rem;
+        }
+        
+        .content {
+            padding: 20px;
+        }
+        
+        .upload-area {
+            padding: 30px 15px;
+        }
+    }
+</style>
+```
+
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📸 Photo Title App</h1>
+            <p>Add titles to your photos with style</p>
+        </div>
+
+```
+    <div class="content">
+        <div class="upload-section">
+            <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                <div class="upload-icon">📁</div>
+                <div class="upload-text">Choose Photo</div>
+                <div class="upload-subtext">or drag and drop here</div>
+            </div>
+            <input type="file" id="fileInput" accept="image/*">
+            <div class="selected-file" id="selectedFile"></div>
+        </div>
+
+        <div class="title-section">
+            <label for="titleInput">Photo Title:</label>
+            <input type="text" id="titleInput" placeholder="Enter your photo title here..." maxlength="100">
+        </div>
+
+        <div class="preview-section">
+            <canvas id="preview"></canvas>
+        </div>
+
+        <div class="download-section">
+            <button id="downloadBtn">Download Photo</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const fileInput = document.getElementById('fileInput');
+    const titleInput = document.getElementById('titleInput');
+    const preview = document.getElementById('preview');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const uploadArea = document.querySelector('.upload-area');
+    const selectedFile = document.getElementById('selectedFile');
+    
+    let originalImage = null;
+    
+    // Drag and drop functionality
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+    
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('dragover');
+    });
+    
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length > 0 && files[0].type.startsWith('image/')) {
+            handleFile(files[0]);
+        }
+    });
+    
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            handleFile(e.target.files[0]);
+        }
+    });
+    
+    titleInput.addEventListener('input', updatePreview);
+    
+    function handleFile(file) {
+        selectedFile.textContent = `Selected: ${file.name}`;
+        selectedFile.style.display = 'block';
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                originalImage = img;
+                updatePreview();
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+    
+    function updatePreview() {
+        if (!originalImage) return;
+        
+        const ctx = preview.getContext('2d');
+        const title = titleInput.value.trim();
+        
+        // Calculate dimensions
+        const maxWidth = 580;
+        const scale = Math.min(maxWidth / originalImage.width, 1);
+        const scaledWidth = originalImage.width * scale;
+        const scaledHeight = originalImage.height * scale;
+        
+        // Title bar height
+        const titleBarHeight = title ? 60 : 0;
+        
+        // Set canvas size
+        preview.width = scaledWidth;
+        preview.height = scaledHeight + titleBarHeight;
+        
+        // Draw the image
+        ctx.drawImage(originalImage, 0, 0, scaledWidth, scaledHeight);
+        
+        // Draw title bar if there's a title
+        if (title) {
+            // Black bar
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, scaledHeight, scaledWidth, titleBarHeight);
+            
+            // Title text
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 24px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // Handle long text
+            const maxTextWidth = scaledWidth - 20;
+            let fontSize = 24;
+            ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+            
+            while (ctx.measureText(title).width > maxTextWidth && fontSize > 12) {
+                fontSize -= 2;
+                ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+            }
+            
+            ctx.fillText(title, scaledWidth / 2, scaledHeight + titleBarHeight / 2);
+        }
+        
+        // Show preview and download button
+        preview.style.display = 'block';
+        downloadBtn.style.display = 'inline-block';
+    }
+    
+    downloadBtn.addEventListener('click', () => {
+        if (!originalImage) return;
+        
+        // Create a high-resolution canvas for download
+        const downloadCanvas = document.createElement('canvas');
+        const ctx = downloadCanvas.getContext('2d');
+        const title = titleInput.value.trim();
+        
+        // Use original image dimensions
+        const titleBarHeight = title ? 80 : 0;
+        downloadCanvas.width = originalImage.width;
+        downloadCanvas.height = originalImage.height + titleBarHeight;
+        
+        // Draw the original image at full resolution
+        ctx.drawImage(originalImage, 0, 0);
+        
+        // Draw title bar if there's a title
+        if (title) {
+            // Black bar
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, originalImage.height, originalImage.width, titleBarHeight);
+            
+            // Title text
+            ctx.fillStyle = '#ffffff';
+            let fontSize = Math.max(32, originalImage.width / 20);
+            ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // Handle long text
+            const maxTextWidth = originalImage.width - 40;
+            while (ctx.measureText(title).width > maxTextWidth && fontSize > 16) {
+                fontSize -= 2;
+                ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+            }
+            
+            ctx.fillText(title, originalImage.width / 2, originalImage.height + titleBarHeight / 2);
+        }
+        
+        // Download the image
+        downloadCanvas.toBlob((blob) => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${title || 'titled_photo'}.jpg`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 'image/jpeg', 0.95);
+    });
+</script>
+```
+
+</body>
+</html>
